@@ -1,0 +1,9 @@
+.DS_store
+
+data/*
+plot/*
+fig/*
+slides/*
+stp/*
+logs/*
+scripts/*
