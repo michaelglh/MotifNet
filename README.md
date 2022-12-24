@@ -12,16 +12,21 @@ To just generate figures from processed data, only figurefirst is needed for fig
 2. Simulations and Figures
 
 runsim.sh:
-This runs the process for simulating steady-state response of the EPSV network to generate neuron transfer-function and to estimate variability transfer from the neuron tranfer-function.
-To run simulations, set the flag sim=1
-To generate figure of neuron tranfer-function (Fig1.D-F) and estimated variability transfer(Fig.3), set the flag fig=1
+
+    This runs the process for simulating steady-state response of the EPSV network to generate neuron transfer-function and to estimate variability transfer from the neuron tranfer-function.
+    To run simulations, set the flag sim=1
+    To generate figure of neuron tranfer-function (Fig1.D-F) and estimated variability transfer(Fig.3), set the flag fig=1.
+    Processed simulation data is provided in folder /experiments/J25.0-m0.5-r0.0/frs/
 
 runsamp.sh:
-The runs the process for simulating with sampled inputs from a given covariance matrix
-To run simulations, set the flag sim=1
-To generate figure of sampled simulations for variability control with variance ratio (Fig.4) and covariance (Fig.5), set the flag fig=1
+
+    The runs the process for simulating with sampled inputs from a given covariance matrix
+    To run simulations, set the flag sim=1
+    To generate figure of sampled simulations for variability control with variance ratio (Fig.4) and covariance (Fig.5), set the flag fig=1
+    Processed simulation data is provided in folder /experiments/J25.0-m0.5-r0.0/frs/
 
 By default:
+
     all simulations are stored in ./data folder
     all processed data are stored in ./experiments/J25.0-m0.5-r0.0/frs
     all figures are stored in ./experiments/J25.0-m0.5-r0.0/fig
