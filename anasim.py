@@ -28,7 +28,7 @@ def main():
     # create argument parser
     parser = argparse.ArgumentParser(description='Analysis of motif PV-SOM-VIP.')
     # profiling
-    parser.add_argument('--exppath', type=str, help='experiment path', default='./experiments/J25.0-m0.5-r0.0')
+    parser.add_argument('--exppath', type=str, help='experiment path', default='./experiments/J25.0-m0.5-r0.0/frs')
     parser.add_argument('--transfer', help='generate Fig1.D-F', action='store_true', default=False)
     parser.add_argument('--var', help='generate Fig3.A', action='store_true', default=False)
     parser.add_argument('--cov', help='generate Fig3.B', action='store_true', default=False)
@@ -76,6 +76,7 @@ def main():
     srange = list(np.arange(*sset))
     erange_old = erange; prange_old = prange; srange_old = srange;
     ein_old, pin_old, sin_old = np.meshgrid(erange, prange, srange, indexing='ij')
+    ein_max, pin_max, sin_max = ein_old.max(), pin_old.max(), sin_old.max()
     rate_on = np.zeros((len(erange), len(prange), len(srange), len(nrn_tps)))
     for i, fr_val in enumerate(fr_range):
         ee, pp, ss, vv = fr_val
@@ -131,13 +132,16 @@ def main():
             ax = layout.axes[('fig_epsv', 'ax_trans')]
             ax['axis'].remove()
             ax['axis'] = plt.axes(list(ax['axis'].get_position().bounds), projection='3d')
-            p = ax.scatter(ein, pin, sin, c=rin, cmap=cmap_name, rasterized=rasterflag)
+            p = ax.scatter(ein*ein_max, pin*pin_max, sin*sin_max, c=rin, cmap=cmap_name, rasterized=rasterflag)
             ax.tick_params(axis='x', which='major', pad=-4)
             ax.tick_params(axis='y', which='major', pad=-4)
             ax.tick_params(axis='z', which='major', pad=-4)
-            ax.set_xlabel(r'$\lambda_E^{in}$', labelpad=-6)
-            ax.set_ylabel(r'$\lambda_P^{in}$', labelpad=-7)
-            ax.set_zlabel(r'$\lambda_S^{in}$', labelpad=-8)
+            ax.set_xlabel(r'$\lambda_E^{in}$(Hz)', labelpad=-6)
+            ax.set_ylabel(r'$\lambda_P^{in}$(Hz)', labelpad=-7)
+            ax.set_zlabel(r'$\lambda_S^{in}$(Hz)', labelpad=-8)
+            ax.set_xticks([-ein_max, 0, ein_max])
+            ax.set_yticks([-pin_max, 0, pin_max])
+            ax.set_zticks([-sin_max, 0, sin_max])
 
             # iso-curves
             rrange = np.arange(rmin, rmax, 1.0)
@@ -177,18 +181,24 @@ def main():
             ax.set_xlabel(r'$\lambda_P^{in}$(Hz)')
             ax.set_ylabel(r'$\lambda_S^{in}$(Hz)', labelpad=-5)
             ax.set_title(r'$\lambda_E^{{in}} = {0}$Hz'.format(erange_old[-2]), pad=5)
+            ax.set_xticks([-pin_max, 0, pin_max])
+            ax.set_yticks([-sin_max, 0, sin_max])
 
             ax = layout.axes[('fig_epsv', 'ax_slice_es')]
             ax.imshow(rate_tar[:,2,:,nidx].T, extent=[ein_old.min(), ein_old.max(), sin_old.min(), sin_old.max()],  vmin=rmin, vmax=rmax, aspect=np.abs((ein_old.min()-ein_old.max())/(sin_old.min()-sin_old.max())), origin='lower', rasterized=rasterflag)
             ax.set_xlabel(r'$\lambda_E^{in}$(Hz)')
             ax.set_ylabel(r'$\lambda_S^{in}$(Hz)', labelpad=-5)
             ax.set_title(r'$\lambda_P^{{in}} = {0}$Hz'.format(prange_old[2]), pad=5)
+            ax.set_xticks([-ein_max, 0, ein_max])
+            ax.set_yticks([-sin_max, 0, sin_max])
 
             ax = layout.axes[('fig_epsv', 'ax_slice_ep')]
             ax.imshow(rate_tar[:,:,2,nidx].T, extent=[ein_old.min(), ein_old.max(), pin_old.min(), pin_old.max()],  vmin=rmin, vmax=rmax, aspect=np.abs((ein_old.min()-ein_old.max())/(pin_old.min()-pin_old.max())), origin='lower', rasterized=rasterflag)
             ax.set_xlabel(r'$\lambda_E^{in}$(Hz)')
             ax.set_ylabel(r'$\lambda_P^{in}$(Hz)', labelpad=-5)
             ax.set_title(r'$\lambda_S^{{in}} = {0}$Hz'.format(srange_old[-2]), pad=5)
+            ax.set_xticks([-ein_max, 0, ein_max])
+            ax.set_yticks([-pin_max, 0, pin_max])
 
             layout.append_figure_to_layer(layout.figures['fig_epsv'], 'fig_epsv', cleartarget=True)
             layout.write_svg(figpath + 'transferfunction.svg')
@@ -241,7 +251,7 @@ def main():
                 vs.append(vin)
                 ss.append(skews)
 
-            fig = plt.figure(figsize=plt.figaspect(0.5))
+            fig = plt.figure(figsize=(7, 3))
 
             alphas ,colors = [0.1, 1.0, 0.5, 1.0, 1.0], ['grey', 'b', 'g', 'r', 'k']
             # rate variance distribution
@@ -262,17 +272,18 @@ def main():
             # variance transfer
             ax = fig.add_subplot(1, 2, 1, projection='3d')
             for idx, c, a in zip(idxes, colors, alphas):
-                ax.scatter(ein.ravel()[idx], pin.ravel()[idx], sin.ravel()[idx], s=1.0, c=c, alpha=a, rasterized=rasterflag) 
+                ax.scatter(ein.ravel()[idx]*ein_max, pin.ravel()[idx]*pin_max, sin.ravel()[idx]*sin_max, s=1.0, c=c, alpha=a, rasterized=rasterflag) 
             ax.tick_params(axis='x', which='major', pad=-3)
             ax.tick_params(axis='y', which='major', pad=-3)
             ax.tick_params(axis='z', which='major', pad=-3)
-            ax.set_xlabel(r'$\lambda_E^{in}$', labelpad=-5)
-            ax.set_ylabel(r'$\lambda_P^{in}$', labelpad=-6)
-            ax.set_zlabel(r'$\lambda_S^{in}$', labelpad=-7)
-            ax.set_xlim([-1.05, 1.05])
-            ax.set_ylim([-1.05, 1.05])
-            ax.set_zlim([-1.05, 1.05])
+            ax.set_xlabel(r'$\lambda_E^{in}$(Hz)', labelpad=-5)
+            ax.set_ylabel(r'$\lambda_P^{in}$(Hz)', labelpad=-6)
+            ax.set_zlabel(r'$\lambda_S^{in}$(Hz)', labelpad=-7)
+            ax.set_xticks([-ein_max, 0, ein_max])
+            ax.set_yticks([-pin_max, 0, pin_max])
+            ax.set_zticks([-sin_max, 0, sin_max])
 
+            plt.tight_layout()
             plt.savefig(figpath + 'var.pdf', dpi=1000)
             plt.close()
 

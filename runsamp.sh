@@ -13,7 +13,7 @@ fpath="./plot/J${J}-m${m}-r${r}"
 COUNTER=1
 THREAD=8
 
-sim=1
+sim=0
 fig=1
 
 inpE=16.0

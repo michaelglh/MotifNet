@@ -124,25 +124,25 @@ def main():
                 sigma_e = 3.0/(1 + abs(1/a) + abs(1/b))
                 sigma_p = sigma_e / abs(a)
                 sigma_s = sigma_e / abs(b)
-                if (a < 0) & (b > 0):
-                    sigma_p *= -1
-                elif (a > 0) & (b < 0):
-                    sigma_s *= -1
-                elif (a < 0) & (b < 0):
-                    sigma_e *= -1
-                # across-trial variance
                 covin[idx] = np.array([[sigma_e, beta, alpha], [beta, sigma_p, gamma], [alpha, gamma, sigma_s]])
+                if (a < 0) & (b > 0):
+                    covin[idx] = np.array([[sigma_e, -beta, alpha], [-beta, sigma_p, -gamma], [alpha, -gamma, sigma_s]])
+                elif (a > 0) & (b < 0):
+                    covin[idx] = np.array([[sigma_e, beta, -alpha], [beta, sigma_p, -gamma], [-alpha, -gamma, sigma_s]])
+                elif (a < 0) & (b < 0):
+                    covin[idx] = np.array([[sigma_e, -beta, -alpha], [-beta, sigma_p, gamma], [-alpha, gamma, sigma_s]])
             elif args.vtype == 'variance':
                 sigma_e = 3.0/(1 + abs(1/alpha) + abs(1/beta))
                 sigma_p = sigma_e / abs(alpha)
                 sigma_s = sigma_e / abs(beta)
-                if (alpha < 0) & (beta > 0):
-                    sigma_p *= -1
-                elif (alpha > 0) & (beta < 0):
-                    sigma_s *= -1
-                elif (alpha < 0) & (beta < 0):
-                    sigma_e *= -1
                 covin[idx] = np.array([[sigma_e, gamma, gamma], [gamma, sigma_p, gamma], [gamma, gamma, sigma_s]])
+                if (alpha < 0) & (beta > 0):
+                    covin[idx] = np.array([[sigma_e, -gamma, gamma], [-gamma, sigma_p, -gamma], [gamma, -gamma, sigma_s]])
+                elif (alpha > 0) & (beta < 0):
+                    covin[idx] = np.array([[sigma_e, gamma, -gamma], [gamma, sigma_p, -gamma], [-gamma, -gamma, sigma_s]])
+                elif (alpha < 0) & (beta < 0):
+                    covin[idx] = np.array([[sigma_e, -gamma, -gamma], [-gamma, sigma_p, gamma], [-gamma, gamma, sigma_s]])
+                
             covout[idx] = np.cov(frs[idx,:,:3].T)
         covmin, covmax = np.min([covin.min(), covout.min()]), np.max([covin.max(), covout.max()])
         fig = plt.figure(figsize=(3*len(frs), 5))
@@ -161,7 +161,10 @@ def main():
                 ax.set_yticks([])
                 
             for (j,i),label in np.ndenumerate(covin[idx]):
-                ax.text(i,j,'%.1f'%label,ha='center',va='center')
+                if label < 0:
+                    ax.text(i,j,'%.1f'%label,ha='center',va='center',color='w')
+                else:
+                    ax.text(i,j,'%.1f'%label,ha='center',va='center',color='k')
             ax = fig.add_subplot(2, len(frs), idx+1+len(frs))
             ax.imshow(covout[idx], vmin=covmin, vmax=covmax)
             ax.set_xticks([])
@@ -169,7 +172,10 @@ def main():
             if idx == 0:
                 ax.text(s=r'$Cov^{out}$', rotation=90, x=-1.3, y=1.2, fontsize='medium')
             for (j,i),label in np.ndenumerate(covout[idx]):
-                ax.text(i,j,'%.2f'%label,ha='center',va='center')
+                if label < 0:
+                    ax.text(i,j,'%.2f'%label,ha='center',va='center',color='w')
+                else:
+                    ax.text(i,j,'%.2f'%label,ha='center',va='center',color='k')
             rect = patches.Rectangle((-0.48, -0.48), 0.98, 0.98, linewidth=1.5, edgecolor='r', facecolor='none')
             ax.add_patch(rect)
         plt.savefig(figpath + '/%s_gamma_%.1f.pdf'%(modpath, gamma))
