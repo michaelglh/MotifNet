@@ -19,13 +19,12 @@ To run simulations, set the flag sim=1
 
 To generate figure of neuron tranfer-function (Fig1.D-F) and estimated variability transfer(Fig.3), set the flag fig=1
 
-*runsamp.sh*
+runsamp.sh:
 
-The runs the process for simulating with sampled inputs from a given covariance matrix
-
-To run simulations, set the flag sim=1
-
-To generate figure of sampled simulations for variability control with variance ratio (Fig.4) and covariance (Fig.5), set the flag fig=1
+    The runs the process for simulating with sampled inputs from a given covariance matrix
+    To run simulations, set the flag sim=1
+    To generate figure of sampled simulations for variability control with variance ratio (Fig.4) and covariance (Fig.5), set the flag fig=1
+    Processed simulation data is provided in folder /experiments/J25.0-m0.5-r0.0/frs/
 
 By default:
 
